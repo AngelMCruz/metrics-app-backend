@@ -30,6 +30,11 @@ La API expone los siguientes endpoints base en la ruta /api/metricas:
 | **PUT** | `/api/metricas/:id` | Modifica una métrica existente según su ID. | Requiere ID en la URL y JSON en el *Body* |
 | **DELETE** | `/api/metricas/:id` | Elimina un registro de métrica del sistema. | Requiere ID en la URL |
 
+La API expone los siguientes endpoints base en la ruta /api/departamentos:
+| Método | Endpoint | Descripción | Parámetros / Query |
+| :--- | :--- | :--- | :--- |
+| GET | /api/departamentos | Obtiene la lista completa de departamentos ordenados de forma ascendente por su ID. | Ninguno |
+
 
 1. Clona este repositorio y navega a la carpeta del proyecto.
 
