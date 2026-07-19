@@ -25,15 +25,13 @@ const getMetrics = async (req, res) => {
 // POST: Crear una nueva métrica
 const createMetric = async (req, res) => {
     try {
-        const { titulo_reporte, valor_metrica, descripcion, departamento_id } = req.body;
+        const { departamento_id, concepto, nombre_visual, valor_numerico, unidad, mes } = req.body;
         const { data, error } = await supabase
-            .from('metricas')
-            .insert([{ titulo_reporte, valor_metrica, descripcion, departamento_id }])
+            .from('metricas_homogeneas')
+            .insert([{ departamento_id, concepto, nombre_visual, valor_numerico, unidad, mes }])
             .select(); 
 
         if (error) throw new Error(error.message);
-
-        // Retorno del objeto insertado
         res.status(201).json(data[0]);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -45,11 +43,11 @@ const createMetric = async (req, res) => {
 const updateMetric = async (req, res) => {
     try {
         const { id } = req.params;
-        const { titulo_reporte, valor_metrica, descripcion, departamento_id } = req.body;
+        const { departamento_id, concepto, nombre_visual, valor_numerico, unidad, mes } = req.body;
 
         const { data, error } = await supabase
-            .from('metricas')
-            .update({ titulo_reporte, valor_metrica, descripcion, departamento_id })
+            .from('metricas_homogeneas')
+            .update({ departamento_id, concepto, nombre_visual, valor_numerico, unidad, mes })
             .eq('id', id)
             .select();
 
@@ -69,7 +67,7 @@ const deleteMetric = async (req, res) => {
     try {
         const { id } = req.params;
         const { data, error } = await supabase
-            .from('metricas')
+            .from('metricas_homogeneas')
             .delete()
             .eq('id', id)
             .select();
