@@ -15,6 +15,4 @@ app.use(express.json());
 app.use('/api/metricas', metricsRoutes);
 app.use('/api/departamentos', departamentosRoutes);
 
-app.listen(PORT, () => {
-    console.log(`Servidor escuchando en http://localhost:${PORT}`);
-});
+module.exports = app;
