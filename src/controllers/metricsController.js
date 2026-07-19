@@ -5,7 +5,7 @@ const getMetrics = async (req, res) => {
     try {
         // 1. Corregido el typo a 'departamento' (o como decidas mandarlo en la URL)
         const { departamento } = req.query; 
-        let query = supabase.from('metricas').select('*');
+        let query = supabase.from('metricas_homogeneas').select('*');
 
         // 2. Corregido para usar la columna real de tu tabla: 'departamento_id'
         if (departamento) {
