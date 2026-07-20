@@ -20,6 +20,13 @@ metrics-app-backend/
 ```
 
 
+## Arquitectura y Características Adicionales
+* **Manejo Centralizado de Errores:** Se integró un middleware de errores (errorHandler.js) que intercepta cualquier fallo no controlado durante el ciclo de vida de las peticiones HTTP, garantizando respuestas JSON estructuradas con códigos de estado HTTP adecuados (400, 404, 500).
+* **Configuración para Vercel:** Se renombró el archivo principal a index.js y se configuró un archivo vercel.json para facilitar el despliegue serverless continuo.
+* **Módulo de Autenticación (Supabase Auth):** Soporte para registro e inicio de sesión de usuarios asociando metadatos para la gestión de roles (admin y user).
+
+
+
 ## Endpoints Disponibles
 La API expone los siguientes endpoints base en la ruta /api/metricas:
 | Método | Endpoint | Descripción | Parámetros / Query |
@@ -36,6 +43,7 @@ La API expone los siguientes endpoints base en la ruta /api/departamentos:
 | GET | /api/departamentos | Obtiene la lista completa de departamentos ordenados de forma ascendente por su ID. | Ninguno |
 
 
+## Instrucciones de Instalación y Ejecución Local
 1. Clona este repositorio y navega a la carpeta del proyecto.
 
 2. Instala las dependencias necesarias:
@@ -54,3 +62,4 @@ SUPABASE_ANON_KEY=tu_anon_key
 ```bash
 npm start
 ```
+
