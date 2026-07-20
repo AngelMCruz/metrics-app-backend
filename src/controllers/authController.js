@@ -1,22 +1,29 @@
 const supabase = require('../config/supabase');
 
-// 1. REGISTRO DE USUARIOS
-const registerUser = async (req, res) => {
+/**
+ * Registra un nuevo usuario en Supabase Auth adjuntando metadatos como el rol y nombre.
+ *
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
+const registerUser = async (req, res, next) => {
   try {
     const { email, password, nombre, role } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ error: 'Email y contraseña son requeridos.' });
+      const err = new Error('Email y contraseña son requeridos.');
+      err.statusCode = 400;
+      return next(err);
     }
 
-    // Le enviamos el rol ('admin' o 'user') en user_metadata a Supabase
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: {
           full_name: nombre || '',
-          role: role || 'user' // Por defecto será 'user' si no se especifica
+          role: role || 'user'
         }
       }
     });
@@ -34,12 +41,18 @@ const registerUser = async (req, res) => {
     });
 
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    next(error);
   }
 };
 
-// 2. INICIO DE SESIÓN
-const loginUser = async (req, res) => {
+/**
+ * Autentica un usuario existente mediante correo electrónico y contraseña.
+ *
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
+const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
@@ -48,7 +61,11 @@ const loginUser = async (req, res) => {
       password
     });
 
-    if (error) throw new Error(error.message);
+    if (error) {
+      const err = new Error(error.message);
+      err.statusCode = 400;
+      return next(err);
+    }
 
     return res.json({
       message: 'Autenticación exitosa',
@@ -64,7 +81,7 @@ const loginUser = async (req, res) => {
     });
 
   } catch (error) {
-    return res.status(400).json({ error: error.message });
+    next(error);
   }
 };
 

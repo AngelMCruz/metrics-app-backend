@@ -1,46 +1,62 @@
 const supabase = require('../config/supabase');
 
-// GET: Obtener todas las métricas o filtrar por departamento
-const getMetrics = async (req, res) => {
+/**
+ * Obtiene la lista de métricas, permitiendo filtrar por departamento mediante query params.
+ *
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
+const getMetrics = async (req, res, next) => {
     try {
-        // 1. Corregido el typo a 'departamento' (o como decidas mandarlo en la URL)
         const { departamento } = req.query; 
         let query = supabase.from('metricas_homogeneas').select('*');
 
-        // 2. Corregido para usar la columna real de tu tabla: 'departamento_id'
         if (departamento) {
             query = query.eq('departamento_id', departamento);
         }
 
         const { data, error } = await query;
-        if (error) {
-            throw new Error(error.message);
-        }
+        if (error) throw new Error(error.message);
+
         res.json(data);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     }
 };
 
-// POST: Crear una nueva métrica
-const createMetric = async (req, res) => {
+/**
+ * Crea un nuevo registro de métrica homogénea en la base de datos.
+ *
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
+const createMetric = async (req, res, next) => {
     try {
         const { departamento_id, concepto, nombre_visual, valor_numerico, unidad, mes } = req.body;
+        
         const { data, error } = await supabase
             .from('metricas_homogeneas')
             .insert([{ departamento_id, concepto, nombre_visual, valor_numerico, unidad, mes }])
             .select(); 
 
         if (error) throw new Error(error.message);
+
         res.status(201).json(data[0]);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     }
 };
 
-
-// PUT: Actualizar una métrica existente
-const updateMetric = async (req, res) => {
+/**
+ * Actualiza los datos de una métrica existente según su identificador único.
+ *
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
+const updateMetric = async (req, res, next) => {
     try {
         const { id } = req.params;
         const { departamento_id, concepto, nombre_visual, valor_numerico, unidad, mes } = req.body;
@@ -52,20 +68,30 @@ const updateMetric = async (req, res) => {
             .select();
 
         if (error) throw new Error(error.message);
+        
         if (!data || data.length === 0) {
-            return res.status(404).json({ error: 'Métrica no encontrada' });
+            const err = new Error('Métrica no encontrada');
+            err.statusCode = 404;
+            return next(err);
         }
 
         return res.json(data[0]);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     }
 };
 
-// DELETE: Eliminar una métrica existente
-const deleteMetric = async (req, res) => {
+/**
+ * Elimina una métrica de la base de datos mediante su ID.
+ *
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
+const deleteMetric = async (req, res, next) => {
     try {
         const { id } = req.params;
+        
         const { data, error } = await supabase
             .from('metricas_homogeneas')
             .delete()
@@ -73,15 +99,17 @@ const deleteMetric = async (req, res) => {
             .select();
 
         if (error) throw new Error(error.message);
+        
         if (!data || data.length === 0) {
-            return res.status(404).json({ error: 'Métrica no encontrada' });
+            const err = new Error('Métrica no encontrada');
+            err.statusCode = 404;
+            return next(err);
         }
 
         return res.json({ message: 'Métrica eliminada correctamente' });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(error);
     }
 };
 
-// Exportación de funciones para ser usadas en las rutas
 module.exports = { getMetrics, createMetric, updateMetric, deleteMetric };
